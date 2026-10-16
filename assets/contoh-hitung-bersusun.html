@@ -1,0 +1,427 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Hitung Bersusun</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;600;700&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: kepala halaman, tiga kapsul menu (gaya daftar materi), lalu satu panel kerja:
+   input angka -> kolom hitung bersusun -> penjelasan langkah -> latihan. */
+:root{
+  --bg:#f4f3fa; --card:#ffffff; --ink:#15131f; --mute:#5b5870; --soft:#e8e6f4;
+  --c-sub:#c8f0a3; --c-mul:#ffd98c; --c-div:#ff9eac; --on:#15131f;
+  --ok:#1f7a3d; --bad:#b3261e;
+  --display:'Lexend',system-ui,sans-serif; --body:'Nunito Sans',system-ui,sans-serif;
+  --cell:clamp(2.2rem,11vw,3.1rem);
+  --tab:var(--c-sub);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#14121d; --card:#1e1b2a; --ink:#f2f0fb; --mute:#a9a5c0; --soft:#2c2839;
+    --c-sub:#a9dd7e; --c-mul:#f2c262; --c-div:#f58a9b; --ok:#6fd58e; --bad:#ff8a80;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14121d; --card:#1e1b2a; --ink:#f2f0fb; --mute:#a9a5c0; --soft:#2c2839;
+  --c-sub:#a9dd7e; --c-mul:#f2c262; --c-div:#f58a9b; --ok:#6fd58e; --bad:#ff8a80;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--body);padding-inline:16px;padding-block:28px 48px}
+.wrap{max-width:46rem;margin-inline:auto;display:flex;flex-direction:column;gap:1.75rem}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance}
+header{text-align:center;display:flex;flex-direction:column;gap:.5rem}
+.eyebrow{font:700 .72rem/1 var(--display);letter-spacing:.14em;text-transform:uppercase;margin:0}
+h1{font-size:clamp(1.6rem,6vw,2.2rem);font-weight:700;line-height:1.15}
+.lede{margin:0 auto;color:var(--mute);max-width:36rem}
+
+/* menu kapsul */
+.menu{display:grid;gap:1.1rem;padding:.4rem}
+.menu-title{font:700 .78rem/1 var(--display);letter-spacing:.12em;text-transform:uppercase;text-align:center;margin:0}
+.capsule{appearance:none;cursor:pointer;display:flex;align-items:center;gap:1rem;width:100%;text-align:left;
+  background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:.4rem 1.25rem .4rem .4rem;
+  outline:2px solid var(--ink);outline-offset:3px;font:700 .85rem/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase;
+  transition:background-color .15s}
+.capsule .ico{flex:none;width:3.4rem;height:3.4rem;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;
+  font:700 1.9rem/1 var(--display);color:var(--on)}
+.capsule[data-k=sub] .ico{background:var(--c-sub)}
+.capsule[data-k=mul] .ico{background:var(--c-mul)}
+.capsule[data-k=div] .ico{background:var(--c-div)}
+.capsule[aria-selected=true][data-k=sub]{background:var(--c-sub);color:var(--on)}
+.capsule[aria-selected=true][data-k=mul]{background:var(--c-mul);color:var(--on)}
+.capsule[aria-selected=true][data-k=div]{background:var(--c-div);color:var(--on)}
+.capsule[aria-selected=true] .ico{background:var(--card);color:var(--ink)}
+.capsule:focus-visible,.btn:focus-visible,.chip:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--ink);outline-offset:4px}
+@media(min-width:40rem){.menu-list{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem}.capsule{font-size:.74rem;gap:.7rem}.capsule .ico{width:3rem;height:3rem;font-size:1.6rem}}
+.menu-list{display:grid;gap:1.1rem}
+
+/* panel */
+.panel{display:flex;flex-direction:column;gap:1.25rem}
+.panel[data-t=sub]{--tab:var(--c-sub)} .panel[data-t=mul]{--tab:var(--c-mul)} .panel[data-t=div]{--tab:var(--c-div)}
+.panel-head{display:flex;flex-direction:column;gap:.35rem}
+.panel-head h2{font-size:1.45rem;font-weight:700}
+.panel-head p{margin:0;color:var(--mute)}
+.how{margin:0;padding:1rem 1.25rem 1rem 2.4rem;background:var(--card);border:2px solid var(--ink);border-radius:1.25rem;display:flex;flex-direction:column;gap:.35rem}
+.how li::marker{font:700 .9rem var(--display)}
+
+.inputs{display:flex;flex-wrap:wrap;align-items:flex-end;gap:.75rem 1rem}
+.field{display:flex;flex-direction:column;gap:.3rem;min-width:0}
+.field label{font:600 .72rem/1 var(--display);letter-spacing:.08em;text-transform:uppercase}
+input[type=text]{width:8rem;max-width:100%;font:600 1.15rem var(--display);padding:.55rem .8rem;border:2px solid var(--ink);border-radius:.9rem;background:var(--card);color:var(--ink)}
+.opglyph{font:700 1.6rem/1 var(--display);padding-bottom:.55rem}
+.btn{appearance:none;cursor:pointer;font:700 .78rem/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);background:var(--card);
+  border:2px solid var(--ink);border-radius:999px;padding:.75rem 1.25rem;transition:transform .1s}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn.primary{background:var(--tab);color:var(--on)}
+.btn:disabled{opacity:.4;cursor:default}
+.err{margin:0;color:var(--bad);font-weight:700;min-height:1.2em}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.chips span.lbl{font:600 .72rem var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.chip{appearance:none;cursor:pointer;font:600 .85rem var(--display);color:var(--ink);background:var(--soft);border:2px solid transparent;border-radius:999px;padding:.35rem .8rem}
+.chip:hover{border-color:var(--ink)}
+
+/* area kerja */
+.work{background:var(--card);border:2px solid var(--ink);border-radius:1.5rem;overflow:hidden}
+.stage{display:flex;padding:1.25rem .75rem;overflow-x:auto;min-height:15rem}
+.grid{display:grid;margin:auto;width:max-content}
+.cell{height:calc(var(--cell)*1.12);min-width:var(--cell);display:grid;place-items:center;font:600 calc(var(--cell)*.6)/1 var(--display);font-variant-numeric:tabular-nums}
+.cell.op{min-width:1.6rem;font-size:calc(var(--cell)*.5);color:var(--mute)}
+.cell.mk-row{height:1.55rem;font-size:.8rem}
+.mk{display:inline-block;background:var(--tab);color:var(--on);border-radius:.5rem;padding:.05rem .4rem;font:700 .8rem/1.3 var(--display)}
+.struck{text-decoration:line-through;text-decoration-thickness:3px;color:var(--mute)}
+.hl{background:color-mix(in srgb,var(--tab) 40%,transparent)}
+.focus{background:color-mix(in srgb,var(--tab) 55%,transparent);border-radius:.6rem}
+.new{background:var(--tab);color:var(--on);border-radius:.6rem}
+.rule{border-top:3px solid var(--ink)}
+.ul{border-bottom:3px solid var(--ink)}
+.ans.done,.done .ans{background:color-mix(in srgb,var(--tab) 55%,transparent)}
+.divisor{font-size:calc(var(--cell)*.6);padding-inline:.5rem;min-width:var(--cell)}
+.bracket{border-left:3px solid var(--ink);border-top:3px solid var(--ink);border-top-left-radius:1rem;min-width:1.6rem}
+.topline{border-top:3px solid var(--ink)}
+.explain{border-top:2px solid var(--ink);padding:1rem 1.25rem;background:color-mix(in srgb,var(--tab) 22%,var(--card));display:flex;flex-direction:column;gap:.4rem}
+.stepno{font:700 .72rem/1 var(--display);letter-spacing:.12em;text-transform:uppercase}
+.msg{margin:0;font-size:1.02rem;max-width:65ch;min-height:4.6em}
+.bar{height:.4rem;background:var(--soft)}
+.bar>i{display:block;height:100%;background:var(--ink);width:0;transition:width .2s}
+.ctrl{display:flex;flex-wrap:wrap;gap:.6rem;padding:.9rem 1.25rem 1.1rem;border-top:2px solid var(--ink)}
+
+.practice{background:var(--card);border:2px solid var(--ink);border-radius:1.5rem;padding:1.1rem 1.25rem;display:flex;flex-direction:column;gap:.8rem}
+.practice h3{font-size:1.05rem}
+.q{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .7rem;font:700 1.35rem var(--display);margin:0}
+.q input{width:7.5rem}
+.pbtns{display:flex;flex-wrap:wrap;gap:.6rem}
+.fb{margin:0;min-height:1.5em;font-weight:700}
+.fb.ok{color:var(--ok)} .fb.no{color:var(--bad)}
+details{background:var(--card);border:2px solid var(--ink);border-radius:1.25rem;padding:.8rem 1.25rem}
+summary{cursor:pointer;font:700 .8rem var(--display);letter-spacing:.08em;text-transform:uppercase}
+details ul{margin:.7rem 0 0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.35rem;color:var(--mute)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Media belajar matematika</p>
+    <h1>Hitung Bersusun</h1>
+    <p class="lede">Pilih materi, lalu ikuti setiap langkah satu per satu. Angka bisa diganti sendiri, dan di bagian bawah ada soal latihan.</p>
+  </header>
+
+  <nav class="menu" aria-label="Daftar materi">
+    <p class="menu-title">Daftar materi</p>
+    <div class="menu-list" role="tablist" id="menu"></div>
+  </nav>
+
+  <section class="panel" id="panel"></section>
+
+  <details>
+    <summary>Cara kerja halaman ini</summary>
+    <ul>
+      <li>Setiap soal diubah menjadi daftar langkah. Satu langkah berisi isi kolom saat itu, kolom yang disorot, dan kalimat penjelasannya.</li>
+      <li>Kolom angka digambar dengan CSS grid, satu sel untuk satu angka, sehingga satuan, puluhan, dan ratusan selalu sejajar.</li>
+      <li>Tombol Sebelumnya dan Berikutnya hanya berpindah antar langkah, jadi siswa bisa mengulang bagian yang belum paham.</li>
+      <li>Untuk materi lain (misalnya penjumlahan bersusun), cukup tambahkan satu fungsi pembuat langkah dan satu fungsi penggambar kolom.</li>
+    </ul>
+  </details>
+</main>
+
+<script>
+/*PURE-START*/
+const fmt=n=>Number(n).toLocaleString('id-ID');
+const range=n=>Array.from({length:n},(_,i)=>i);
+const PLACES=['satuan','puluhan','ratusan','ribuan','puluh ribuan','ratus ribuan','jutaan'];
+
+function subSteps(a,b){
+  const A=String(a).split('').map(Number), n=A.length;
+  const B=String(b).padStart(n,' ').split('').map(c=>c===' '?null:Number(c));
+  const cur=A.slice(), res=Array(n).fill(null), changed=Array(n).fill(false);
+  const finalStr=String(a-b).padStart(n,' ');
+  const steps=[];
+  const push=(hi,msg,final=false)=>steps.push({n,orig:A,cur:cur.slice(),changed:changed.slice(),B,res:res.slice(),finalStr,hi,msg,final});
+  push(-1,`Tulis ${fmt(a)} di atas ${fmt(b)}. Sejajarkan satuan dengan satuan, puluhan dengan puluhan, dan seterusnya. Kita mulai mengurangi dari kolom paling kanan, yaitu satuan.`);
+  for(let i=n-1;i>=0;i--){
+    const place=PLACES[n-1-i], bd=B[i]??0;
+    if(cur[i]<bd){
+      let j=i-1; while(cur[j]===0) j--;
+      const before=cur[i], pj=PLACES[n-1-j];
+      cur[j]-=1; changed[j]=true;
+      for(let k=j+1;k<i;k++){cur[k]=9;changed[k]=true;}
+      cur[i]+=10; changed[i]=true;
+      const chain=j<i-1;
+      push(i,`${before} lebih kecil dari ${bd}, jadi belum bisa dikurangi. Kita pinjam 1 ${pj} dari kolom sebelah kiri. `+
+        (chain?`Kolom di antaranya bernilai 0, sehingga berubah menjadi 9 (peminjaman berantai). `:`Nilainya sama dengan 10 ${place}. `)+
+        `Angka ${before} menjadi ${before+10}.`);
+    }
+    const r=cur[i]-bd; res[i]=r;
+    push(i,`${cur[i]} − ${bd} = ${r}. `+(finalStr[i]===' '?`Nol di bagian paling depan tidak perlu ditulis.`:`Tulis ${r} pada kolom ${place}.`));
+  }
+  push(-1,`Hasil: ${fmt(a)} − ${fmt(b)} = ${fmt(a-b)}. Cek dengan penjumlahan: ${fmt(a-b)} + ${fmt(b)} = ${fmt(a)}.`,true);
+  return steps;
+}
+
+function mulSteps(a,b){
+  const A=String(a).split('').map(Number), Bd=String(b).split('').map(Number);
+  const la=A.length, lb=Bd.length, N=la+lb;
+  const partial=[]; let carryRow=Array(N).fill('');
+  const steps=[];
+  const snap=(msg,o={})=>steps.push({N,la,lb,A,Bd,partial:partial.map(r=>r.slice()),carry:carryRow.slice(),
+    hiA:-1,hiB:-1,hiRow:-1,hiW:-1,total:null,final:false,msg,...o});
+  snap(`Tulis ${fmt(a)} di atas ${fmt(b)}, sejajarkan dari kanan. Kita kalikan ${fmt(a)} dengan setiap angka pada ${fmt(b)}, mulai dari angka paling kanan.`);
+  for(let r=0;r<lb;r++){
+    const bd=Bd[lb-1-r], bp=PLACES[r];
+    partial.push(Array(N).fill('')); carryRow=Array(N).fill('');
+    if(r>0){
+      for(let z=0;z<r;z++) partial[r][N-1-z]='0';
+      snap(`Sekarang kalikan dengan ${bd} (${bp}). Karena ini ${bp}, tulis ${r===1?'satu angka 0':r+' angka 0'} di paling kanan sebagai penjaga tempat.`,{hiB:N-1-r,hiRow:r});
+    } else {
+      snap(`Mulai dengan ${bd} (${bp}). Kalikan ${bd} dengan tiap angka di atasnya, dari kanan ke kiri.`,{hiB:N-1,hiRow:0});
+    }
+    let carry=0;
+    for(let k=0;k<la;k++){
+      const ad=A[la-1-k], prod=ad*bd+carry, col=N-1-r-k, last=k===la-1;
+      let msg=`${bd} × ${ad} = ${ad*bd}`+(carry?`, ditambah simpanan ${carry} menjadi ${prod}`:'');
+      if(last){
+        const s=String(prod);
+        for(let t=0;t<s.length;t++) partial[r][col-t]=s[s.length-1-t];
+        msg+=`. Ini angka terakhir, jadi tulis seluruh hasilnya: ${prod}.`;
+      } else {
+        partial[r][col]=String(prod%10);
+        carry=Math.floor(prod/10);
+        carryRow[N-1-(k+1)]=carry?String(carry):'';
+        msg+=`. Tulis ${prod%10}`+(carry?` dan simpan ${carry} di atas angka berikutnya.`:'.');
+      }
+      snap(msg,{hiA:N-1-k,hiB:N-1-r,hiRow:r,hiW:col});
+    }
+  }
+  const total=a*b;
+  if(lb===1) snap(`Hasil: ${fmt(a)} × ${b} = ${fmt(total)}.`,{final:true});
+  else{
+    const parts=partial.map(r=>Number(r.join('')||0));
+    snap(`Jumlahkan semua baris hasil perkalian: ${parts.map(fmt).join(' + ')} = ${fmt(total)}. Jadi ${fmt(a)} × ${fmt(b)} = ${fmt(total)}.`,{total,final:true});
+  }
+  return steps;
+}
+
+function divSteps(a,b){
+  const D=String(a).split('').map(Number), n=D.length;
+  const steps=[], q=Array(n).fill(''), lines=[];
+  const snap=(msg,hf=-1,ht=-1,final=false)=>steps.push({n,D,a,b,q:q.slice(),lines:lines.map(l=>({...l})),hf,ht,msg,final});
+  snap(`Tulis ${fmt(a)} di dalam tanda bagi dan ${b} di sebelah kirinya. Hasil bagi ditulis di atas, tepat di atas angka yang sedang dibagi.`);
+  let cur=0, started=false;
+  for(let i=0;i<n;i++){
+    cur=cur*10+D[i];
+    if(!started){
+      if(cur<b){
+        if(i<n-1) snap(`Ambil ${cur}. ${cur} lebih kecil dari ${b}, belum cukup dibagi. Ambil satu angka lagi.`,0,i);
+        continue;
+      }
+      started=true;
+      lines.push({text:String(cur),end:i,type:'cur'});
+      snap(`Ambil ${cur}, angka depan yang sudah cukup untuk dibagi ${b}.`,0,i);
+    } else {
+      lines.pop(); lines.push({text:String(cur),end:i,type:'cur'});
+      snap(`Turunkan angka ${D[i]}. Sekarang yang dibagi adalah ${cur}.`,i,i);
+    }
+    const qd=Math.floor(cur/b);
+    q[i]=String(qd);
+    if(qd===0){
+      snap(`${cur} lebih kecil dari ${b}, jadi hasil baginya 0. Tulis 0 di atas`+(i<n-1?', lalu turunkan angka berikutnya.':'. Tidak ada angka lagi, jadi sisanya '+cur+'.'),i,i);
+      continue;
+    }
+    snap(`${b} × ${qd} = ${b*qd}, tidak lebih dari ${cur}. Sedangkan ${b} × ${qd+1} = ${b*(qd+1)}, terlalu besar. Jadi tulis ${qd} di atas.`,i,i);
+    const prod=qd*b;
+    lines.push({text:String(prod),end:i,type:'prod'});
+    snap(`Kalikan: ${qd} × ${b} = ${prod}. Tulis ${prod} tepat di bawah ${cur}.`,i,i);
+    const rem=cur-prod;
+    lines.push({text:String(rem),end:i,type:'rem'});
+    snap(`Kurangkan: ${cur} − ${prod} = ${rem}. `+(i<n-1?`Sisa ${rem} lebih kecil dari ${b}, jadi aman. Lanjutkan dengan menurunkan angka berikutnya.`:`Tidak ada angka lagi untuk diturunkan.`),i,i);
+    cur=rem;
+  }
+  if(!started){ q[n-1]='0'; snap(`${fmt(a)} lebih kecil dari ${b}, jadi hasil baginya 0 dan sisanya ${a}.`); }
+  const Q=Math.floor(a/b), r=a%b;
+  snap(`Hasil: ${fmt(a)} ÷ ${b} = ${fmt(Q)}`+(r?` sisa ${r}`:'')+`. Cek: ${b} × ${fmt(Q)}`+(r?` + ${r}`:'')+` = ${fmt(a)}.`,-1,-1,true);
+  return steps;
+}
+/*PURE-END*/
+
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s);
+function gridHTML(tpl,rows,extra=''){
+  return `<div class="grid ${extra}" style="grid-template-columns:${tpl}">`+
+    rows.map(r=>r.map(c=>`<div class="cell ${c.c||''}">${c.t??''}</div>`).join('')).join('')+`</div>`;
+}
+function renderSub(s){
+  const n=s.n, h=c=>c===s.hi?' hl':'', rows=[];
+  rows.push([{t:'',c:'mk-row'},...range(n).map(c=>({t:s.changed[c]?`<span class="mk">${s.cur[c]}</span>`:'',c:'mk-row'+h(c)}))]);
+  rows.push([{t:''},...range(n).map(c=>({t:`<span class="${s.changed[c]?'struck':''}">${s.orig[c]}</span>`,c:h(c)}))]);
+  rows.push([{t:'−',c:'op'},...range(n).map(c=>({t:s.B[c]??'',c:h(c)}))]);
+  rows.push([{t:'',c:'rule'},...range(n).map(c=>({t:(s.res[c]!==null&&s.finalStr[c]!==' ')?s.res[c]:'',c:'ans rule'+h(c)+(s.final?' done':'')}))]);
+  return gridHTML(`1.6rem repeat(${n},var(--cell))`,rows);
+}
+function renderMul(s){
+  const {N,la,lb}=s, rows=[], f=(c,k)=>c===k?' focus':'';
+  rows.push([{t:'',c:'mk-row'},...range(N).map(c=>({t:s.carry[c]?`<span class="mk">${s.carry[c]}</span>`:'',c:'mk-row'}))]);
+  rows.push([{t:''},...range(N).map(c=>({t:c>=N-la?s.A[c-(N-la)]:'',c:f(c,s.hiA)}))]);
+  rows.push([{t:'×',c:'op'},...range(N).map(c=>({t:c>=N-lb?s.Bd[c-(N-lb)]:'',c:f(c,s.hiB)}))]);
+  s.partial.forEach((row,r)=>rows.push([
+    {t:(lb>1&&r===lb-1)?'+':'',c:'op'+(r===0?' rule':'')},
+    ...range(N).map(c=>({t:row[c],c:(r===0?'rule':'')+((r===s.hiRow&&c===s.hiW)?' new':'')+((lb===1&&s.final)?' ans done':'')}))
+  ]));
+  if(s.total!==null){
+    const t=String(s.total).padStart(N,' ');
+    rows.push([{t:'',c:'rule'},...range(N).map(c=>({t:t[c]===' '?'':t[c],c:'rule ans done'}))]);
+  }
+  return gridHTML(`1.6rem repeat(${N},var(--cell))`,rows);
+}
+function renderDiv(s){
+  const n=s.n, rows=[];
+  rows.push([{t:''},{t:''},...range(n).map(c=>({t:s.q[c],c:'ans'+(s.final?' done':'')}))]);
+  rows.push([{t:s.b,c:'divisor'},{t:'',c:'bracket'},...range(n).map(c=>({t:s.D[c],c:'topline'+((c>=s.hf&&c<=s.ht&&s.hf>=0)?' hl':'')}))]);
+  s.lines.forEach((l,idx)=>{
+    const row=[{t:''},{t:l.type==='prod'?'−':'',c:'op'},...range(n).map(()=>({t:''}))];
+    const start=l.end-l.text.length+1;
+    for(let t=0;t<l.text.length;t++){
+      row[2+start+t]={t:l.text[t],c:(l.type==='prod'?'ul':'')+((s.final&&idx===s.lines.length-1)?' ans done':'')};
+    }
+    rows.push(row);
+  });
+  return gridHTML(`auto 1.6rem repeat(${n},var(--cell))`,rows);
+}
+
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const TABS={
+  sub:{nav:'Pengurangan Bersusun',glyph:'−',title:'Pengurangan Bersusun',
+    intro:'Angka-angka disusun ke bawah menurut nilai tempat, lalu dikurangi kolom demi kolom dari kanan.',
+    how:['Tulis angka sejajar: satuan di bawah satuan, puluhan di bawah puluhan.','Kurangi mulai dari kolom satuan.','Jika angka atas lebih kecil, pinjam 1 dari kolom di sebelah kiri. Nilainya 10 di kolom ini.','Periksa hasil dengan penjumlahan.'],
+    ex:[[52,27],[704,358],[1000,467]],start:[704,358],max:[6,6],
+    gen:subSteps,render:renderSub,
+    check(a,b){ return a<b?'Angka pertama harus lebih besar atau sama dengan angka kedua.':''; },
+    pr:()=>{const a=rnd(200,999);return[a,rnd(50,a-1)]},ans:(a,b)=>a-b},
+  mul:{nav:'Perkalian Bersusun',glyph:'×',title:'Perkalian Bersusun',
+    intro:'Angka atas dikalikan dengan setiap angka di bawahnya. Baris-baris hasilnya lalu dijumlahkan.',
+    how:['Kalikan angka atas dengan angka bawah paling kanan, dari kanan ke kiri.','Jika hasilnya 10 atau lebih, tulis satuannya dan simpan puluhannya.','Untuk angka bawah berikutnya, mulai baris baru dengan 0 (puluhan), 00 (ratusan), dan seterusnya.','Jumlahkan semua baris hasil.'],
+    ex:[[23,4],[36,24],[125,12]],start:[36,24],max:[4,3],
+    gen:mulSteps,render:renderMul,check(){return ''},
+    pr:()=>{const two=Math.random()<.5;return[rnd(12,99),two?rnd(11,29):rnd(2,9)]},ans:(a,b)=>a*b},
+  div:{nav:'Pembagian Bersusun',glyph:'÷',title:'Pembagian Bersusun (Porogapit)',
+    intro:'Angka yang dibagi diurai dari depan. Setiap putaran melakukan tiga hal: bagi, kalikan, kurangkan, lalu turunkan angka berikutnya.',
+    how:['Ambil angka depan yang sudah cukup untuk dibagi.','Bagi, tulis hasilnya di atas. Kalikan, lalu kurangkan.','Turunkan angka berikutnya dan ulangi.','Sisa harus selalu lebih kecil dari pembagi.'],
+    ex:[[84,4],[756,6],[156,12]],start:[756,6],max:[6,2],
+    gen:divSteps,render:renderDiv,
+    check(a,b){ return b===0?'Pembagi tidak boleh 0.':''; },
+    pr:()=>{const b=rnd(2,9);return[b*rnd(12,160),b]},ans:(a,b)=>a/b}
+};
+const ORDER=['sub','mul','div'];
+const S={}; let cur='sub';
+ORDER.forEach(k=>{S[k]={a:TABS[k].start[0],b:TABS[k].start[1],steps:[],i:0,p:TABS[k].pr()}});
+function load(k,a,b){const st=S[k];st.a=a;st.b=b;st.steps=TABS[k].gen(a,b);st.i=0}
+ORDER.forEach(k=>load(k,S[k].a,S[k].b));
+
+function renderMenu(){
+  $('#menu').innerHTML=ORDER.map(k=>`<button class="capsule" role="tab" data-act="tab" data-k="${k}" aria-selected="${k===cur}"><span class="ico" aria-hidden="true">${TABS[k].glyph}</span><span>${TABS[k].nav}</span></button>`).join('');
+}
+function renderPanel(){
+  const t=TABS[cur], st=S[cur];
+  $('#panel').setAttribute('data-t',cur);
+  $('#panel').innerHTML=`
+  <div class="panel-head"><h2>${t.title}</h2><p>${t.intro}</p></div>
+  <ol class="how">${t.how.map(x=>`<li>${x}</li>`).join('')}</ol>
+  <div class="inputs">
+    <div class="field"><label for="inA">Angka pertama</label><input type="text" id="inA" inputmode="numeric" autocomplete="off" value="${st.a}" maxlength="${t.max[0]}"></div>
+    <div class="opglyph" aria-hidden="true">${t.glyph}</div>
+    <div class="field"><label for="inB">Angka kedua</label><input type="text" id="inB" inputmode="numeric" autocomplete="off" value="${st.b}" maxlength="${t.max[1]}"></div>
+    <button class="btn primary" data-act="apply">Tampilkan</button>
+  </div>
+  <p class="err" id="err" role="alert"></p>
+  <div class="chips"><span class="lbl">Contoh</span>${t.ex.map(e=>`<button class="chip" data-act="ex" data-a="${e[0]}" data-b="${e[1]}">${fmt(e[0])} ${t.glyph} ${fmt(e[1])}</button>`).join('')}</div>
+  <div class="work">
+    <div class="stage" id="stage"></div>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="explain" aria-live="polite"><div class="stepno" id="stepno"></div><p class="msg" id="msg"></p></div>
+    <div class="ctrl">
+      <button class="btn" data-act="prev" id="prev">Sebelumnya</button>
+      <button class="btn primary" data-act="next" id="next">Berikutnya</button>
+      <button class="btn" data-act="reset">Ulangi</button>
+    </div>
+  </div>
+  <section class="practice" aria-label="Latihan">
+    <h3>Coba sendiri</h3>
+    <p class="q" id="q"></p>
+    <div class="pbtns">
+      <button class="btn primary" data-act="check">Periksa</button>
+      <button class="btn" data-act="newq">Soal baru</button>
+      <button class="btn" data-act="show">Lihat langkahnya</button>
+    </div>
+    <p class="fb" id="fb" role="status"></p>
+  </section>`;
+  renderQ(); update();
+}
+function renderQ(){
+  const t=TABS[cur], p=S[cur].p;
+  $('#q').innerHTML=`${fmt(p[0])} ${t.glyph} ${fmt(p[1])} = <input type="text" id="pans" inputmode="numeric" autocomplete="off" aria-label="Jawaban" maxlength="8">`;
+  $('#fb').textContent=''; $('#fb').className='fb';
+}
+function update(){
+  const st=S[cur], s=st.steps[st.i];
+  $('#stage').innerHTML=TABS[cur].render(s);
+  $('#stepno').textContent=`Langkah ${st.i+1} dari ${st.steps.length}`;
+  $('#msg').textContent=s.msg;
+  $('#bar').style.width=((st.i+1)/st.steps.length*100)+'%';
+  $('#prev').disabled=st.i===0;
+  $('#next').disabled=st.i===st.steps.length-1;
+}
+function apply(a,b){
+  const t=TABS[cur], err=$('#err');
+  if(!(a>=0)||!(b>=0)||isNaN(a)||isNaN(b)){err.textContent='Isi kedua kolom dengan angka.';return}
+  const e=t.check(a,b); if(e){err.textContent=e;return}
+  err.textContent=''; load(cur,a,b); $('#inA').value=a; $('#inB').value=b; update();
+}
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-act]'); if(!el) return;
+  const act=el.dataset.act, st=S[cur];
+  if(act==='tab'){cur=el.dataset.k;renderMenu();renderPanel();}
+  else if(act==='prev'){if(st.i>0){st.i--;update();}}
+  else if(act==='next'){if(st.i<st.steps.length-1){st.i++;update();}}
+  else if(act==='reset'){st.i=0;update();}
+  else if(act==='ex'){apply(Number(el.dataset.a),Number(el.dataset.b));}
+  else if(act==='apply'){
+    const a=$('#inA').value.replace(/\D/g,''), b=$('#inB').value.replace(/\D/g,'');
+    apply(a===''?NaN:Number(a),b===''?NaN:Number(b));
+  }
+  else if(act==='newq'){st.p=TABS[cur].pr();renderQ();}
+  else if(act==='show'){apply(st.p[0],st.p[1]);$('#stage').scrollIntoView({behavior:'smooth',block:'center'});}
+  else if(act==='check'){
+    const v=$('#pans').value.replace(/\D/g,''), fb=$('#fb'), want=TABS[cur].ans(...st.p);
+    if(v===''){fb.textContent='Tulis jawabanmu dulu.';fb.className='fb no';return}
+    if(Number(v)===want){fb.textContent='Benar. Jawabannya '+fmt(want)+'.';fb.className='fb ok';}
+    else{fb.textContent='Belum tepat. Coba lagi, atau tekan Lihat langkahnya.';fb.className='fb no';}
+  }
+});
+document.addEventListener('keydown',ev=>{
+  if(ev.target.tagName==='INPUT') { if(ev.key==='Enter'){ const b=ev.target.id==='pans'?'check':'apply'; const btn=document.querySelector(`[data-act=${b}]`); if(btn) btn.click(); } return; }
+  const st=S[cur];
+  if(ev.key==='ArrowRight'&&st.i<st.steps.length-1){st.i++;update();}
+  if(ev.key==='ArrowLeft'&&st.i>0){st.i--;update();}
+});
+renderMenu(); renderPanel();
+</script>
+
+</body></html>

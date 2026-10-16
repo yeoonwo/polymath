@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PolyMath — Belajar Matematika</title>
+<style>
+.flashcard-board .flashcard-grid .flashcard-tile,.flashcard-board .flashcard-grid .flashcard-inner{min-height:260px}.flashcard-board .flashcard-grid .flashcard-face{overflow-y:auto;padding:16px 18px}
+@media(max-width:600px){.flashcard-board .flashcard-grid .flashcard-tile,.flashcard-board .flashcard-grid .flashcard-inner{min-height:260px}}
+.quiz-prompt.story{display:block;min-height:0;text-align:left;font-size:22px;line-height:1.5}.quiz-feedback{padding:14px 16px;border-radius:14px;background:#f4f7fb;text-align:left;line-height:1.6}
+.addition-walkthrough{margin:18px 0 22px;padding:18px 20px;border:1px solid #f1cbd4;border-left:5px solid var(--rose);border-radius:14px;background:#fff8fa}.addition-walkthrough h3{margin:0 0 12px}.addition-walkthrough p{margin:8px 0;line-height:1.65}.addition-jumps{padding:12px 14px;border-radius:10px;background:white;font-weight:900;line-height:1.9;overflow-wrap:anywhere}
+.quiz-question-card{display:grid;gap:16px;max-width:760px;margin:26px auto}.quiz-question-number{font-size:18px;font-weight:900}.quiz-prompt{display:grid;place-items:center;min-height:128px;padding:24px;border:2px solid var(--ink);border-radius:30px;background:white;text-align:center;font-size:32px;margin:0}.quiz-options{display:grid;gap:14px}.quiz-option{width:100%;min-height:70px;padding:16px 22px;border:2px solid var(--ink);border-radius:24px;background:white;color:var(--ink);font-size:22px;font-weight:900}.quiz-option:hover{background:#fff5f7;border-color:var(--rose)}.quiz-option.correct{background:#e9f5e8;border-color:#76ad83;color:#356d43}.quiz-option.incorrect{background:#fff0f3;border-color:#dc8ca0;color:#9d425b}.quiz-option:disabled{cursor:default;transform:none;filter:none}.quiz-feedback{min-height:28px;margin:0;text-align:center;font-weight:900}.quiz-feedback.correct{color:#356d43}.quiz-feedback.incorrect{color:#9d425b}.quiz-navigation{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:24px}.quiz-navigation[hidden]{display:none}.quiz-result{text-align:center;padding:clamp(24px,5vw,54px) 16px}.quiz-result h2{font-size:34px}.quiz-result-actions{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:24px}
+@media(max-width:600px){.quiz-prompt{min-height:100px;padding:18px;font-size:26px}.quiz-option{min-height:62px;padding:14px 18px;font-size:20px}.quiz-navigation{align-items:stretch}.quiz-navigation button{flex:1}}
+.flashcard-grid .flashcard-tile{display:block;width:100%;min-height:160px;padding:0;background:transparent;border:0;border-radius:26px;color:inherit;font-size:inherit;perspective:1000px}.flashcard-grid .flashcard-tile:hover{background:transparent;border-color:transparent;filter:none}.flashcard-grid .flashcard-inner{position:relative;display:block;width:100%;min-height:160px;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.2,.7,.25,1)}.flashcard-grid .flashcard-tile.is-flipped .flashcard-inner{transform:rotateY(180deg)}.flashcard-grid .flashcard-face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:22px;border:2px solid var(--ink);border-radius:26px;background:white;color:var(--ink);backface-visibility:hidden;-webkit-backface-visibility:hidden}.flashcard-grid .flashcard-face span{font-size:14px;font-weight:800;color:var(--muted)}.flashcard-grid .flashcard-face strong{font-size:26px}.flashcard-grid .flashcard-back{transform:rotateY(180deg);background:#f0f7ff;border-color:#86bde9}.flashcard-grid .flashcard-tile:focus-visible .flashcard-face{outline:3px solid var(--rose);outline-offset:3px}@media(max-width:600px){.flashcard-grid .flashcard-face strong{font-size:22px}}@media(prefers-reduced-motion:reduce){.flashcard-grid .flashcard-inner{transition:none}}
+.flashcard-board{display:flex;flex-direction:column;justify-content:space-between;gap:34px;min-height:410px;margin-top:26px;padding:clamp(20px,4vw,36px);border:2px solid var(--ink);border-radius:30px}.flashcard-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;width:min(100%,650px);margin:0 auto}.flashcard-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-height:140px;padding:22px;background:white;border:2px solid var(--ink);border-radius:26px;color:var(--ink);font-size:24px}.flashcard-tile:hover{background:#fff5f7;border-color:var(--rose)}.flashcard-tile.revealed{background:#f0f7ff;border-color:#86bde9}.flashcard-tile span{font-size:14px;font-weight:800;color:var(--muted)}.flashcard-tile strong{font-size:26px}.flashcard-board-title{text-align:center;font-size:30px;margin:0}.flashcard-navigation{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:24px}.flashcard-navigation-group{display:flex;gap:10px;flex-wrap:wrap}
+@media(max-width:600px){.flashcard-grid{grid-template-columns:1fr}.flashcard-board{min-height:0;padding:20px;gap:28px}.flashcard-tile{min-height:120px;padding:18px}.flashcard-tile strong{font-size:22px}.flashcard-board-title{font-size:25px}}
+.simulator-navigation{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:24px}.simulator-navigation button:disabled,.simulator-navigation button:disabled:hover{opacity:.55;cursor:not-allowed;transform:none;filter:none}
+.locked-action{display:inline-flex;align-items:center;gap:8px}.locked-action svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.locked-action svg[hidden]{display:none}.locked-action:disabled,.locked-action:disabled:hover{cursor:not-allowed;opacity:.65;transform:none;filter:none}
+.password-toggle svg.hidden{display:none}
+.password-input-wrap{position:relative}.password-input-wrap input{padding-right:58px!important}.password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:40px;height:40px;padding:0;display:grid;place-items:center;background:transparent;color:var(--muted);border-radius:50%}.password-toggle:hover{transform:translateY(-50%);background:#fff0f3;filter:none}.password-toggle:focus-visible{outline:3px solid #e78da1;outline-offset:2px}.password-toggle svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.division-group{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;max-width:100%;min-width:72px;padding:8px 12px;border:2px solid var(--ink);border-radius:999px;background:#ffffffb8}.division-group .counter{width:24px;height:24px}.division-remainder{display:flex;align-items:center;gap:8px;padding:6px 2px}.division-remainder-label{font-size:14px;font-weight:900;color:var(--muted)}.division-remainder .counter{width:24px;height:24px}
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
+:root{--pink:#ffb2c1;--pink2:#ffe8ed;--rose:#c65c78;--ink:#383945;--muted:#687083;--blue:#eaf5ff;--cream:#fffaf7;--line:#f3dfe3;--green:#e9f5e8}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Nunito,Arial,sans-serif;color:var(--ink);background:linear-gradient(120deg,#fff4f5,#fffdfa 52%,#eef6ff);min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer;border:0;font-weight:900;border-radius:999px;padding:13px 22px;transition:.2s}button:hover{transform:translateY(-1px);filter:brightness(.98)}.primary{background:var(--pink);color:#704454}.secondary{background:#f7f3f0;color:#3e414b;border:1px solid var(--line)}.outline{background:white;border:1px solid #f1cbd4;color:#343743}
+header{height:82px;background:#ffffffed;border-bottom:1px solid #f5e5e7;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,4.5vw,70px);position:sticky;top:0;z-index:10;backdrop-filter:blur(12px)}
+.brand{display:flex;align-items:center;gap:10px;font-size:24px;font-weight:900;letter-spacing:-.5px}.brand-mark{width:42px;height:42px;background:var(--pink);border-radius:13px;display:grid;place-items:center;color:white;font-size:30px;line-height:1}
+.brand img{max-width:175px;max-height:48px;object-fit:contain}.nav{display:flex;gap:8px;align-items:center}.nav button{background:transparent;color:#393b47;padding:12px 17px}.nav button.active{background:#ffd4de}.greeting{background:#fff0f3;color:#b04f69;padding:12px 20px;border-radius:999px;font-weight:900}
+main{max-width:1370px;margin:auto;padding:34px clamp(18px,4.5vw,70px) 70px}.page{display:none}.page.active{display:block}.hero{display:grid;grid-template-columns:1.15fr .85fr;align-items:center;gap:34px;background:linear-gradient(120deg,#fff0f3,#fffaf3 55%,#eaf5ff);border-radius:42px;padding:clamp(28px,5vw,76px);min-height:490px}.eyebrow{font-size:14px;font-weight:900;letter-spacing:2px;color:var(--rose);text-transform:uppercase}.hero h1{font-size:clamp(38px,5vw,72px);line-height:1.06;letter-spacing:-2px;margin:18px 0 24px}.accent{color:#df7893}.lead{font-size:19px;line-height:1.8;color:#606a7c;max-width:680px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}.hero-logo{display:grid;place-items:center;min-height:290px}.logo-card{background:var(--pink);border-radius:46px;padding:45px 28px;color:white;text-align:center;transform:rotate(-4deg);box-shadow:16px 15px 0 #c5e3ff;max-width:380px;width:100%}.logo-card strong{font-size:clamp(48px,6vw,78px);line-height:.9;display:block;letter-spacing:-3px;text-shadow:0 5px 0 #ed8da2}.logo-card small{display:block;margin-top:25px;font-size:16px;font-weight:900}.actual-logo{display:block;width:min(100%,390px);height:auto;object-fit:contain;margin:auto}.hero-logo .actual-logo{width:min(100%,420px)}.login-logo .actual-logo{width:min(100%,280px);max-height:250px}.logo-card{display:none}
+.section-head{margin:46px 0 22px}.section-head h2{font-size:clamp(28px,3vw,42px);margin:4px 0}.section-head p{color:var(--muted);font-size:17px}.operation-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.op-card{background:#fff9fa;border:2px solid #ffc2ce;border-radius:30px;padding:25px;display:flex;flex-direction:column;align-items:flex-start;min-height:240px}.op-card:nth-child(2){background:#fff7f6}.op-card:nth-child(3){background:#fff9fa}.op-card:nth-child(4){background:#f0f7ff;border-color:#b8ddff}.op-card h3{font-size:23px;margin:0 0 12px}.op-card p{font-size:17px;line-height:1.7;margin:0 0 14px}.op-card ul{padding-left:22px;line-height:1.8;margin:0 0 15px}.op-card button{margin-top:auto}.banner{margin:22px 0;background:#f8f8ef;border:2px dashed #e0e0d4;border-radius:30px;text-align:center;padding:22px}.banner h2{font-size:clamp(28px,3vw,44px);margin:0 0 10px}
+.mind-intro{background:#fff;border:1px solid var(--line);border-radius:28px;padding:24px;margin-bottom:20px}.mind-center{background:#f8f8ef;border:2px dashed #deded2;border-radius:25px;text-align:center;padding:24px;margin:0 auto 20px;max-width:650px}.mind-center h2{font-size:32px;margin:0 0 7px}.mind-branches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.mind-branch{background:#fff4f6;border:2px solid #ffc0cd;border-radius:27px;padding:24px}.mind-branch:nth-child(4){background:#eef7ff;border-color:#b7dcff}.mind-branch h3{margin:0 0 12px;font-size:23px}.mind-branch p{font-size:16px;line-height:1.7}.mind-branch ul{line-height:1.85;padding-left:22px}.formula{background:#fff;border:1px solid var(--line);border-radius:17px;padding:12px 16px;font-weight:900;display:inline-block;font-size:20px}
+.panel{background:white;border:1px solid var(--line);border-radius:32px;padding:clamp(20px,3vw,38px);box-shadow:0 18px 45px #4b3a4010}.topline{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}.topline h1{font-size:clamp(30px,4vw,46px);margin:6px 0}.muted{color:var(--muted);line-height:1.7}.form-grid{display:grid;grid-template-columns:1.05fr 1fr 1fr auto;gap:14px;align-items:end;margin:28px 0 22px}.field label{display:block;font-weight:900;margin-bottom:8px}.field input,.field select{width:100%;padding:15px 17px;border:1px solid #eedce0;border-radius:17px;background:white;outline:none;font-weight:800;min-height:56px}.field input:focus,.field select:focus{border-color:var(--pink);box-shadow:0 0 0 3px #ffb2c133}.sim-display{background:linear-gradient(110deg,#fff5f7,#f1f8ff);border-radius:28px;padding:clamp(20px,4vw,38px);min-height:290px}.result-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.op-tag{background:#fff0f3;color:#b64f6b;border-radius:999px;padding:9px 14px;font-weight:900}.big-equation{background:white;border:1px solid var(--line);border-radius:20px;padding:18px 23px;font-size:clamp(28px,4vw,44px);font-weight:900;letter-spacing:1px}.visual-objects{display:flex;gap:8px;flex-wrap:wrap;margin:24px 0 8px;max-width:100%}.counter{width:35px;height:35px;border-radius:50%;background:#ffb1c0;box-shadow:inset 0 -4px #ed8da2;display:grid;place-items:center;color:#854458;font-weight:900}.counter.blue{background:#b8ddff;box-shadow:inset 0 -4px #8cc7f7;color:#315b82}.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px}.step{background:white;border:1px solid var(--line);border-radius:20px;padding:18px}.step-number{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--pink2);color:#b04f69;font-weight:900;margin-bottom:10px}.step h4{margin:0 0 8px}.step p{margin:0;line-height:1.6;color:#61697a}.notice{margin-top:18px;padding:15px 18px;background:#fff7df;border:1px solid #f4e0a8;border-radius:18px;line-height:1.6}
+.content-layout{display:grid;grid-template-columns:.8fr 1.2fr;gap:22px}.content-list{display:grid;gap:12px}.content-choice{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:17px}.content-choice strong{font-size:18px}.content-choice p{margin:4px 0 0;color:var(--muted)}.lesson-box{background:linear-gradient(130deg,#fff6f7,#f0f8ff);border-radius:26px;padding:26px}.lesson-box h2{font-size:30px;margin:0 0 12px}.lesson-box h3{margin-top:22px}.lesson-box li{line-height:1.8;margin-bottom:5px}.lesson-example{background:#fff;border:1px solid var(--line);padding:18px;border-radius:18px;font-size:22px;font-weight:900}
+.login-wrap{min-height:calc(100vh - 150px);display:grid;place-items:center}.login-card{max-width:630px;width:100%;background:#ffffffeb;border:1px solid var(--line);border-radius:34px;padding:clamp(25px,4vw,46px);box-shadow:0 18px 60px #55323a10}.login-logo{display:flex;justify-content:center;margin-bottom:25px}.login-logo .logo-card{max-width:260px;padding:27px 20px;border-radius:30px}.login-logo .logo-card strong{font-size:48px}.login-card h1{font-size:42px;margin:5px 0 12px}.login-card .field{margin:18px 0}.login-card .field input{font-size:17px}.login-error{color:#b33250;font-weight:800;margin:10px 0}.login-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+footer{border-top:1px solid #f3e4e7;padding:26px clamp(18px,4.5vw,70px);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#7a8190;background:#ffffff80}
+@media(max-width:850px){header{height:auto;min-height:74px;flex-wrap:wrap;gap:10px;padding:13px 18px}.nav{order:3;width:100%;justify-content:center}.greeting{font-size:13px;padding:9px 12px}.hero{grid-template-columns:1fr;padding:28px;min-height:0}.hero-logo{min-height:220px}.logo-card{max-width:300px}.form-grid{grid-template-columns:1fr 1fr}.form-grid button{width:100%}.content-layout{grid-template-columns:1fr}.steps{grid-template-columns:1fr}.operation-grid,.mind-branches{grid-template-columns:1fr}}
+@media(max-width:500px){.brand{font-size:20px}.brand-mark{width:36px;height:36px}.nav button{padding:9px 10px;font-size:13px}.form-grid{grid-template-columns:1fr}.hero h1{letter-spacing:-1px}.login-card h1{font-size:34px}}
+</style>
+<style>
+.column-example{margin:0;padding:16px 18px;border:1px solid var(--line);border-radius:18px;background:#fff}
+.column-example-equation{margin:0 0 12px;font-size:20px;font-weight:900}
+.column-board{display:grid;justify-content:center;overflow-x:auto;padding:10px 4px 14px;font-family:monospace;font-variant-numeric:tabular-nums}
+.column-row{display:grid;align-items:center;min-height:34px;text-align:center;font-size:22px;font-weight:900;line-height:1.2}
+.column-op{color:var(--muted);font-size:19px}
+.column-digit{min-width:0}
+.column-row.carry{min-height:23px;color:var(--rose);font-size:14px}
+.column-row.borrow{min-height:24px;color:var(--rose);font-size:15px}
+.column-row.result{border-top:2px solid var(--ink);margin-top:3px;padding-top:4px}
+.column-row.factor-end{border-bottom:2px solid var(--ink)}
+.column-row.partial{font-size:19px}
+.column-note{margin:8px 0 0;font-size:15px;font-weight:600;line-height:1.6}
+.division-work{width:max-content;min-width:120px;margin:0 auto 8px;font:900 22px/1.35 monospace;font-variant-numeric:tabular-nums}
+.division-top{padding-left:48px;text-align:center}
+.division-main{display:flex;align-items:stretch}
+.division-divisor{width:42px;text-align:center}
+.division-dividend{min-width:48px;padding:0 8px;border-top:2px solid var(--ink);border-left:2px solid var(--ink);border-top-left-radius:10px;text-align:center}
+.division-work .division-subtract,.division-work .division-rule,.division-work .division-remainder{margin-left:50px}
+.division-rule{width:42px;border-top:2px solid var(--ink)}
+@media(max-width:500px){.column-example{padding:14px}.column-example-equation{font-size:18px}.column-row{font-size:20px}.column-row.partial{font-size:18px}.column-note{font-size:14px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand" id="brandHome"><span class="brand-mark">+</span><span>PolyMath</span></div>
+  <nav class="nav" aria-label="Navigasi utama">
+    <button id="navHome" onclick="showPage('home')">Beranda</button>
+    <button id="navMind" onclick="showPage('mindmap')">Mind Map</button>
+    <button id="navMaterials" onclick="showPage('materials')">Daftar Materi</button>
+  </nav>
+  <div class="greeting" id="greeting">Hai, Teman!</div>
+</header>
+<main>
+  <section class="page active" id="home">
+    <div class="hero">
+      <div>
+        <div class="eyebrow">Media belajar interaktif</div>
+        <h1>Belajar matematika jadi lebih <span class="accent">menyenangkan.</span></h1>
+        <p class="lead">Selamat datang di PolyMath! Jelajahi empat operasi hitung dasar lewat materi ringkas, simulator visual, dan latihan yang membantu memahami langkah penyelesaian.</p>
+        <div class="actions"><button class="primary" id="startLearning" onclick="startLearning()">Mulai Belajar →</button><button class="outline locked-action" id="materialsAction" type="button" disabled aria-disabled="true" onclick="openMaterials()" title="Login terlebih dahulu untuk membuka daftar materi"><svg class="lock-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 1 1 8 0v3"></path></svg><svg class="unlock-icon" viewBox="0 0 24 24" aria-hidden="true" hidden><rect x="4" y="10" width="16" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 7.5-2"></path></svg><span>Daftar Materi (terkunci)</span></button></div>
+      </div>
+      <div class="hero-logo"><img class="actual-logo" src="logo polymath.png.png" alt="Logo PolyMath"></div>
+    </div>
+    <div class="section-head"><div class="eyebrow">Mulai dari sini</div><h2>Empat operasi hitung dasar</h2><p>Pilih materi yang ingin kamu pelajari.</p></div>
+    <div class="operation-grid" id="homeOps"></div>
+  </section>
+
+  <section class="page" id="login">
+    <div class="login-wrap"><div class="login-card">
+      <div class="login-logo"><img class="actual-logo" src="logo polymath.png.png" alt="Logo PolyMath"></div>
+      <div class="eyebrow">Selamat datang di PolyMath</div><h1>Siap mulai belajar?</h1>
+      <p class="muted">Masukkan email dan password untuk masuk ke media pembelajaran.</p>
+      <form id="loginForm">
+        <div class="field"><label for="email">Email</label><input id="email" type="email" placeholder="nama@email.com" autocomplete="email" required></div>
+        <div class="field"><label for="password">Password</label><div class="password-input-wrap"><input id="password" type="password" placeholder="Minimal 4 karakter" minlength="4" required><button class="password-toggle" id="passwordVisibility" type="button" aria-label="Tampilkan sandi" aria-pressed="false" onclick="togglePasswordVisibility()"><svg class="eye-open" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7"></path><circle cx="12" cy="12" r="3"></circle></svg><svg class="eye-closed hidden" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7"></path><circle cx="12" cy="12" r="3"></circle><path d="m3 3 18 18"></path></svg></button></div></div>
+        <div class="notice">Mode demo: data login hanya diperiksa di browser dan tidak dikirim ke server.</div>
+        <div id="loginError" class="login-error" role="alert"></div>
+        <div class="login-actions"><button class="primary" type="submit">Mulai Belajar</button><button class="secondary" type="button" onclick="showPage('home')">Kembali</button></div>
+      </form>
+    </div></div>
+  </section>
+
+  <section class="page" id="mindmap">
+    <div class="topline"><div><div class="eyebrow">Peta konsep</div><h1>Mind Map Operasi Hitung</h1><p class="muted">Ringkasan konsep, sifat, dan contoh empat operasi hitung dasar.</p></div><button class="secondary" onclick="showPage('home')">← Beranda</button></div>
+    <div class="mind-center"><h2>Operasi Hitung Dasar</h2><div>Konsep • Sifat • Contoh • Penerapan</div></div>
+    <div class="mind-branches" id="mindBranches"></div>
+  </section>
+
+  <section class="page" id="materials">
+    <div class="topline"><div><div class="eyebrow">Materi pembelajaran</div><h1>Daftar Materi</h1><p class="muted">Pilih salah satu operasi. Setiap materi dapat dibuka langsung dari daftar ini.</p></div><button class="secondary" onclick="showPage('home')">← Beranda</button></div>
+    <div class="content-layout" style="margin-top:24px">
+      <div class="content-list" id="materialChoices"></div>
+      <div class="lesson-box" id="lessonDetail"><div class="eyebrow">Pilih materi</div><h2>Mulai dari operasi yang kamu inginkan</h2><p class="muted">Pilih kartu materi di sebelah kiri untuk melihat konsep, sifat, contoh, dan tombol simulator.</p></div>
+    </div>
+  </section>
+
+  <section class="page" id="simulator">
+    <div class="panel">
+      <div class="topline"><div><div class="eyebrow">Belajar sambil mencoba</div><h1>Simulator Operasi Hitung</h1><p class="muted">Masukkan angka, tekan hitung, lalu ikuti langkah penyelesaiannya.</p></div><button class="secondary" onclick="showPage('login')">← Kembali ke Login</button></div>
+      <div class="form-grid">
+        <div class="field"><label for="operation">Operasi</label><select id="operation"><option value="add">Penjumlahan</option><option value="sub">Pengurangan</option><option value="mul">Perkalian</option><option value="div">Pembagian</option></select></div>
+        <div class="field"><label for="numberA">Nilai awal</label><input id="numberA" type="number" value="23" step="1"></div>
+        <div class="field"><label for="numberB">Nilai kedua</label><input id="numberB" type="number" value="14" step="1"></div>
+        <button class="primary" onclick="calculate()">Hitung</button>
+      </div>
+      <div class="sim-display" aria-live="polite">
+        <div class="result-row"><span class="op-tag" id="resultTag">Penjumlahan</span><div class="big-equation" id="equation">23 + 14 = 37</div></div>
+        <div class="visual-objects" id="visualObjects"></div>
+        <p class="muted" id="explanation">Menggabungkan dua bilangan untuk mendapatkan jumlah.</p>
+      </div>
+      <div class="section-head" style="margin:24px 0 12px"><h2 style="font-size:28px">Langkah penyelesaian</h2><p>Ikuti urutannya agar kamu tahu dari mana hasilnya berasal.</p></div>
+      <div class="steps" id="solutionSteps"></div>
+      <div class="notice" id="simNotice">Tips: cobalah mengganti angka dan tekan Hitung untuk melihat langkah yang berbeda.</div>
+      <div class="simulator-navigation" aria-label="Navigasi materi"><button class="secondary" id="simulatorPrevious" type="button" onclick="returnToLesson()">← Materi Inti</button><button class="primary" id="simulatorNext" type="button" onclick="openFlashcards()">Selanjutnya: Flashcard →</button></div>
+    </div>
+  </section>
+  <section class="page" id="flashcards">
+    <div class="panel">
+      <div class="topline"><div><div class="eyebrow">Latihan setelah simulasi</div><h1>Flashcard</h1><p class="muted" id="flashcardDescription">Tekan kartu untuk melihat jawaban.</p></div><button class="secondary" type="button" onclick="showPage('simulator')">← Kembali ke Simulator</button></div>
+      <div class="flashcard-board"><div class="flashcard-grid" id="flashcardGrid"></div><h2 class="flashcard-board-title" id="flashcardTitle">Flashcard</h2></div>
+      <div class="flashcard-navigation"><button class="secondary" type="button" onclick="showPage('simulator')">← Simulator</button><div class="flashcard-navigation-group"><button class="primary" type="button" onclick="showPage('materials')">Selanjutnya: Daftar Materi →</button></div></div>
+    </div>
+  </section>
+  <section class="page" id="quiz">
+    <div class="panel">
+      <div class="topline"><div><div class="eyebrow">Latihan operasi hitung</div><h1 id="quizTitle">Kuis</h1><p class="muted" id="quizDescription">Pilih jawaban yang menurutmu benar.</p></div><button class="secondary" type="button" onclick="returnToQuizLesson()">← Materi Inti</button></div>
+      <div id="quizContent"></div>
+      <div class="quiz-navigation" id="quizNavigation"><button class="secondary" id="quizPrevious" type="button" onclick="previousQuizQuestion()">← Sebelumnya</button><button class="primary" id="quizNext" type="button" disabled onclick="nextQuizQuestion()">Selanjutnya →</button></div>
+    </div>
+  </section>
+</main>
+<footer><span>PolyMath</span><span>Belajar, mencoba, dan bertumbuh 🌷</span></footer>
+<script>
+const ops = {
+ add:{name:'Penjumlahan',symbol:'+',desc:'Menggabungkan dua atau lebih bilangan untuk mendapatkan hasil yang lebih besar.',properties:['Komutatif: a + b = b + a','Asosiatif: (a + b) + c = a + (b + c)','Identitas: a + 0 = a'],example:'37 + 25 = 62',concept:'Penjumlahan menggabungkan dua kelompok bilangan menjadi satu jumlah.',application:'Menghitung jumlah benda, nilai belanja, atau total skor.'},
+ sub:{name:'Pengurangan',symbol:'−',desc:'Mengurangi suatu bilangan dari bilangan lain untuk mendapatkan selisih.',properties:['Tidak komutatif: a − b tidak selalu sama dengan b − a','Tidak asosiatif: (a − b) − c tidak selalu sama dengan a − (b − c)','Identitas kanan: a − 0 = a'],example:'56 − 28 = 28',concept:'Pengurangan mencari selisih atau sisa setelah suatu jumlah diambil.',application:'Menghitung sisa benda, selisih nilai, atau uang kembalian.'},
+ mul:{name:'Perkalian',symbol:'×',desc:'Menjumlahkan bilangan yang sama secara berulang.',properties:['Komutatif: a × b = b × a','Asosiatif: (a × b) × c = a × (b × c)','Identitas: a × 1 = a; sifat nol: a × 0 = 0'],example:'6 × 4 = 24',concept:'Perkalian adalah penjumlahan berulang dari kelompok yang sama banyak.',application:'Menghitung total benda dalam beberapa kelompok yang sama.'},
+ div:{name:'Pembagian',symbol:'÷',desc:'Membagi suatu bilangan menjadi kelompok sama banyak atau mencari banyaknya tiap kelompok.',properties:['Tidak komutatif: a ÷ b tidak selalu sama dengan b ÷ a','Tidak asosiatif','Identitas: a ÷ 1 = a; pembagi tidak boleh 0'],example:'24 ÷ 6 = 4',concept:'Pembagian membagikan jumlah secara merata atau menentukan banyak kelompok.',application:'Membagi benda sama rata atau membagi total menjadi beberapa kelompok.'}
+};
+const order=['add','sub','mul','div'];
+const flashcardDecks={
+ add:[
+  ['45 + 38 = ...','83. 45 + 38 = 45 + 30 + 8 = 75 + 8 = 83.'],
+  ['126 + 247 = ...','373. 126 + 200 = 326, lalu 326 + 47 = 373.'],
+  ['508 + 395 = ...','903. 508 + 400 = 908, lalu kurangi 5 menjadi 903.'],
+  ['1.250 + 750 = ...','2.000. 250 + 750 = 1.000, lalu 1.000 + 1.000 = 2.000.'],
+  ['3.487 + 2.615 = ...','6.102. 3.487 + 2.600 = 6.087, lalu 6.087 + 15 = 6.102.'],
+  ['64 + ... = 100','36. 100 − 64 = 36, jadi 64 + 36 = 100.'],
+  ['... + 275 = 500','225. 500 − 275 = 225.'],
+  ['9.999 + 1 = ...','10.000. Bilangan setelah 9.999 adalah 10.000.'],
+  ['Benar atau salah: 350 + 470 = 830','Salah. 350 + 470 = 820 (350 + 400 = 750, lalu 750 + 70 = 820).'],
+  ['12 + 18 + 30 = ...','60. 12 + 18 = 30, lalu 30 + 30 = 60.']
+ ],
+ sub:[
+  ['90 − 47 = ...','43. 90 − 40 = 50, lalu 50 − 7 = 43.'],
+  ['250 − 128 = ...','122. 250 − 100 = 150, lalu 150 − 28 = 122.'],
+  ['1.000 − 385 = ...','615. 1.000 − 400 = 600, lalu tambahkan kembali 15 = 615.'],
+  ['5.400 − 2.700 = ...','2.700. Karena 2.700 + 2.700 = 5.400.'],
+  ['8.005 − 3.996 = ...','4.009. 8.005 − 4.000 = 4.005, lalu tambahkan kembali 4 = 4.009.'],
+  ['150 − ... = 90','60. 150 − 90 = 60.'],
+  ['... − 320 = 480','800. 480 + 320 = 800.'],
+  ['Benar atau salah: 700 − 250 = 550','Salah. 700 − 250 = 450 (700 − 200 = 500, lalu 500 − 50 = 450).'],
+  ['2.000 − 1 = ...','1.999. Bilangan sebelum 2.000 adalah 1.999.'],
+  ['100 − 25 − 15 = ...','60. 100 − 25 = 75, lalu 75 − 15 = 60.']
+ ],
+ mul:[
+  ['6 × 7 = ...','42. Sesuai tabel perkalian.'],
+  ['9 × 8 = ...','72. Sesuai tabel perkalian.'],
+  ['12 × 5 = ...','60. 12 × 5 = 10 × 5 + 2 × 5 = 50 + 10 = 60.'],
+  ['25 × 4 = ...','100. 25 + 25 + 25 + 25 = 100.'],
+  ['15 × 12 = ...','180. 15 × 10 = 150 dan 15 × 2 = 30, lalu 150 + 30 = 180.'],
+  ['34 × 10 = ...','340. Dikali 10 berarti menambahkan satu angka nol di belakang.'],
+  ['8 × ... = 96','12. 96 ÷ 8 = 12, jadi 8 × 12 = 96.'],
+  ['... × 9 = 81','9. 81 ÷ 9 = 9, jadi 9 × 9 = 81.'],
+  ['Benar atau salah: 7 × 8 = 54','Salah. 7 × 8 = 56.'],
+  ['4 × 5 × 3 = ...','60. 4 × 5 = 20, lalu 20 × 3 = 60.']
+ ],
+ div:[
+  ['56 ÷ 8 = ...','7. Karena 8 × 7 = 56.'],
+  ['81 ÷ 9 = ...','9. Karena 9 × 9 = 81.'],
+  ['144 ÷ 12 = ...','12. Karena 12 × 12 = 144.'],
+  ['250 ÷ 5 = ...','50. Karena 5 × 50 = 250.'],
+  ['1.000 ÷ 25 = ...','40. Karena 25 × 40 = 1.000.'],
+  ['360 ÷ 6 = ...','60. 36 ÷ 6 = 6, sehingga 360 ÷ 6 = 60.'],
+  ['... ÷ 7 = 8','56. Lawan dari membagi adalah mengalikan: 8 × 7 = 56.'],
+  ['96 ÷ ... = 12','8. Karena 12 × 8 = 96.'],
+  ['Benar atau salah: 72 ÷ 9 = 7','Salah. 72 ÷ 9 = 8, karena 9 × 8 = 72.'],
+  ['100 ÷ 4 ÷ 5 = ...','5. 100 ÷ 4 = 25, lalu 25 ÷ 5 = 5.']
+ ]
+};
+let currentUser=sessionStorage.getItem('polymathUser')||'';
+let currentFlashcardOperation='add';
+const revealedFlashcards=new Set();
+const quizDecks={
+ add:[
+  {question:'4.750 + 3.286 = ...',choices:['7.936','8.036','8.136','7.036'],answer:'8.036',explanation:'Susun berdasarkan nilai tempat. Setelah menyimpan angka pada puluhan dan ratusan, hasilnya adalah 8.036.'},
+  {question:'Bilangan yang jika ditambah 2.345 hasilnya 5.000 adalah ...',choices:['2.655','2.755','3.655','7.345'],answer:'2.655',explanation:'Bilangan yang dicari adalah 5.000 − 2.345 = 2.655. Cek: 2.655 + 2.345 = 5.000.'},
+  {question:'1.245 + 3.678 + 2.077 = ...',choices:['6.900','7.000','7.100','7.200'],answer:'7.000',explanation:'1.245 + 3.678 = 4.923, lalu 4.923 + 2.077 = 7.000.'},
+  {question:'Toko Bu Ani menjual 235 kg beras pada hari Senin dan 268 kg pada hari Selasa. Berapa kg beras yang terjual selama dua hari?',choices:['493 kg','503 kg','513 kg','523 kg'],answer:'503 kg',explanation:'Total beras yang terjual adalah 235 + 268 = 503 kg.'},
+  {question:'Pak Bimo menabung Rp125.000 pada Januari, Rp98.000 pada Februari, dan Rp150.000 pada Maret. Sepeda harganya Rp350.000. Apakah tabungannya cukup?',choices:['Tidak cukup, kurang Rp23.000','Cukup, tersisa Rp23.000','Cukup, tersisa Rp73.000','Pas, tidak ada sisa'],answer:'Cukup, tersisa Rp23.000',explanation:'Total tabungan Rp125.000 + Rp98.000 + Rp150.000 = Rp373.000. Jumlah ini lebih besar dari Rp350.000 sebesar Rp23.000.'}
+ ],
+ sub:[
+  {question:'6.324 − 2.869 = ...',choices:['3.455','3.555','4.455','3.465'],answer:'3.455',explanation:'6.324 − 2.800 = 3.524, lalu 3.524 − 69 = 3.455. Cek: 3.455 + 2.869 = 6.324.'},
+  {question:'Berapa yang harus dikurangkan dari 9.000 agar hasilnya 6.450?',choices:['2.450','2.550','3.550','15.450'],answer:'2.550',explanation:'Bilangan yang dikurangkan adalah 9.000 − 6.450 = 2.550.'},
+  {question:'12.500 − 4.750 − 1.250 = ...',choices:['8.500','7.500','6.400','6.500'],answer:'6.500',explanation:'12.500 − 4.750 = 7.750, lalu 7.750 − 1.250 = 6.500.'},
+  {question:'Ibu membawa Rp100.000 ke pasar. Ibu membeli sayur seharga Rp27.500 dan ikan seharga Rp35.000. Berapa sisa uang Ibu?',choices:['Rp27.500','Rp37.500','Rp42.500','Rp62.500'],answer:'Rp37.500',explanation:'Total belanja Rp27.500 + Rp35.000 = Rp62.500. Sisa uang Rp100.000 − Rp62.500 = Rp37.500.'},
+  {question:'Sebuah bus membawa 48 penumpang. Sebanyak 15 penumpang turun dan 9 penumpang naik. Rani menghitung 48 − 15 − 9 = 24. Benarkah? Berapa penumpang sekarang?',choices:['Benar, 24 penumpang','Tidak benar, 42 penumpang','Tidak benar, 33 penumpang','Benar, 42 penumpang'],answer:'Tidak benar, 42 penumpang',explanation:'48 − 15 = 33 penumpang tersisa, lalu 9 penumpang naik sehingga 33 + 9 = 42. Penumpang yang naik harus ditambahkan.'}
+ ],
+ mul:[
+  {question:'23 × 14 = ...',choices:['312','322','332','342'],answer:'322',explanation:'23 × 10 = 230 dan 23 × 4 = 92, lalu 230 + 92 = 322.'},
+  {question:'245 × 6 = ...',choices:['1.370','1.570','1.470','1.480'],answer:'1.470',explanation:'200 × 6 = 1.200 dan 45 × 6 = 270, lalu 1.200 + 270 = 1.470.'},
+  {question:'152 × 12 = ...',choices:['1.724','1.814','1.924','1.824'],answer:'1.824',explanation:'152 × 10 = 1.520 dan 152 × 2 = 304, lalu 1.520 + 304 = 1.824.'},
+  {question:'Setiap kotak berisi 12 jeruk. Toko membeli 15 kotak. Berapa jumlah jeruk seluruhnya?',choices:['160 jeruk','170 jeruk','180 jeruk','190 jeruk'],answer:'180 jeruk',explanation:'12 × 15 = 12 × 10 + 12 × 5 = 120 + 60 = 180 jeruk.'},
+  {question:'Panitia membeli 6 dus air mineral. Setiap dus berisi 24 botol dan harga tiap botol Rp2.500. Berapa total yang harus dibayar?',choices:['Rp240.000','Rp340.000','Rp360.000','Rp420.000'],answer:'Rp360.000',explanation:'Jumlah botol 6 × 24 = 144. Biaya 144 × Rp2.500 = Rp360.000.'}
+ ],
+ div:[
+  {question:'672 ÷ 8 = ...',choices:['74','94','84','86'],answer:'84',explanation:'640 ÷ 8 = 80 dan 32 ÷ 8 = 4, sehingga 672 ÷ 8 = 84. Cek: 8 × 84 = 672.'},
+  {question:'1.485 ÷ 5 = ...',choices:['297','287','307','397'],answer:'297',explanation:'1.500 ÷ 5 = 300 dan 15 ÷ 5 = 3, sehingga 1.485 ÷ 5 = 300 − 3 = 297.'},
+  {question:'3.276 ÷ 12 = ...',choices:['263','283','273','372'],answer:'273',explanation:'Cek dengan perkalian: 12 × 273 = 2.400 + 840 + 36 = 3.276, sehingga hasilnya 273.'},
+  {question:'Bu Guru membagikan 96 permen sama banyak ke dalam 8 kantong. Berapa permen dalam setiap kantong?',choices:['10 permen','11 permen','12 permen','14 permen'],answer:'12 permen',explanation:'96 ÷ 8 = 12 permen dalam setiap kantong.'},
+  {question:'Ada 180 siswa. Setiap tenda memuat 6 siswa dan panitia memiliki 25 tenda. Apakah tendanya cukup?',choices:['Cukup, tersisa 5 tenda','Tidak cukup, kurang 5 tenda','Tidak cukup, kurang 10 tenda','Cukup tepat 25 tenda'],answer:'Tidak cukup, kurang 5 tenda',explanation:'Diperlukan 180 ÷ 6 = 30 tenda. Panitia hanya punya 25, jadi kurang 30 − 25 = 5 tenda.'}
+ ]
+};
+let currentQuizOperation='add',currentQuizIndex=0,currentQuizQuestions=[],quizAnswers=[],quizComplete=false;
+function updateLearningAccess(){
+ const button=document.getElementById('materialsAction'),loggedIn=Boolean(currentUser);
+ button.disabled=!loggedIn;button.setAttribute('aria-disabled',String(!loggedIn));button.title=loggedIn?'Buka daftar materi':'Login terlebih dahulu untuk membuka daftar materi';
+ button.querySelector('.lock-icon').hidden=loggedIn;button.querySelector('.unlock-icon').hidden=!loggedIn;
+ button.querySelector('span').textContent=loggedIn?'Daftar Materi':'Daftar Materi (terkunci)';
+ document.getElementById('greeting').textContent=loggedIn?'Hai, '+currentUser+'!':'Hai, Teman!';
+}
+function startLearning(){showPage(currentUser?'materials':'login')}
+function openMaterials(){if(currentUser)showPage('materials')}
+updateLearningAccess();
+function showPage(id){
+ if((id==='materials'||id==='mindmap')&&!currentUser)id='login';
+ if((id==='materials'||id==='mindmap'||id==='flashcards')&&!currentUser)id='login';
+ if((id==='materials'||id==='mindmap'||id==='flashcards'||id==='quiz')&&!currentUser)id='login';
+ document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));
+ document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+ const navMap={home:'navHome',mindmap:'navMind',materials:'navMaterials'};
+ if(navMap[id])document.getElementById(navMap[id]).classList.add('active');
+ window.scrollTo({top:0,behavior:'smooth'});
+ if(id==='materials')renderMaterials();
+}
+function opCard(key){const o=ops[key];return `<article class="op-card"><h3>${o.symbol} ${o.name}</h3><p>${o.desc}</p><button class="primary" onclick="openLesson('${key}')">Pelajari</button></article>`}
+document.getElementById('homeOps').innerHTML=order.map(opCard).join('');
+document.getElementById('mindBranches').innerHTML=order.map(key=>{const o=ops[key];return `<article class="mind-branch"><h3>${o.symbol} ${o.name}</h3><p>${o.desc}</p><ul>${o.properties.map(p=>`<li>${p}</li>`).join('')}</ul><div class="formula">Contoh: ${o.example}</div><p><strong>Penerapan:</strong> ${o.application}</p></article>`}).join('');
+function renderMaterials(){
+ document.getElementById('materialChoices').innerHTML=order.map(key=>{const o=ops[key];return `<div class="content-choice"><div><strong>${o.symbol} ${o.name}</strong><p>${o.concept}</p></div><button class="primary" onclick="openLesson('${key}')">Buka</button></div>`}).join('');
+}
+function openLesson(key){
+ const o=ops[key];
+ document.getElementById('lessonDetail').innerHTML=`<div class="eyebrow">Materi inti</div><h2>${o.symbol} ${o.name}</h2><p>${o.concept}</p><h3>Sifat-sifat</h3><ul>${o.properties.map(p=>`<li>${p}</li>`).join('')}</ul><h3>Contoh</h3><div class="lesson-example">${o.example}</div><h3>Penerapan sehari-hari</h3><p>${o.application}</p><div class="actions"><button class="primary" onclick="openSimulator('${key}')">Coba Simulator →</button></div>`;
+ document.getElementById('lessonDetail').innerHTML=`<div class="eyebrow">Materi inti</div><h2>${o.symbol} ${o.name}</h2>${key==='add'?'<div class="addition-walkthrough"><h3>Contoh: 122.000 + 60.000</h3><p><strong>Mulai:</strong> Kita mulai dari 122.000.</p><p><strong>Langkah:</strong> 60.000 sama dengan 6 kali 10.000, jadi kita maju enam kali:</p><p class="addition-jumps">122.000 → 132.000 → 142.000 → 152.000 → 162.000 → 172.000 → 182.000</p><p><strong>Hasil:</strong> 122.000 + 60.000 = 182.000.</p></div>':key==='sub'?'<div class="addition-walkthrough"><h3>Contoh: 150.000 − 40.000</h3><p><strong>Mulai:</strong> Kita mulai dari 150.000.</p><p><strong>Langkah:</strong> 40.000 sama dengan 4 kali 10.000. Karena ini pengurangan, kita mundur empat kali:</p><p class="addition-jumps">150.000 → 140.000 → 130.000 → 120.000 → 110.000</p><p><strong>Hasil:</strong> 150.000 − 40.000 = 110.000.</p></div>':key==='mul'?'<div class="addition-walkthrough"><h3>Contoh: 30.000 × 4</h3><p><strong>Mulai:</strong> Kita mulai dari 0.</p><p><strong>Langkah:</strong> 30.000 dikali 4 artinya kita menambahkan 30.000 sebanyak 4 kali secara bertahap:</p><p class="addition-jumps">0 → 30.000 → 60.000 → 90.000 → 120.000</p><p><strong>Hasil:</strong> 30.000 × 4 = 120.000.</p></div>':key==='div'?'<div class="addition-walkthrough"><h3>Contoh: 120.000 ÷ 3</h3><p><strong>Mulai:</strong> Kita mulai dari total 120.000.</p><p><strong>Langkah:</strong> 120.000 dibagi 3 berarti kita mengurangi 40.000 sebanyak 3 kali hingga habis:</p><p class="addition-jumps">120.000 → 80.000 → 40.000 → 0</p><p><strong>Hasil:</strong> 120.000 ÷ 3 = 40.000.</p></div>':''}<p>${o.concept}</p><h3>Sifat-sifat</h3><ul>${o.properties.map(p=>`<li>${p}</li>`).join('')}</ul><h3>Contoh</h3><div class="lesson-example">${o.example}</div><h3>Penerapan sehari-hari</h3><p>${o.application}</p><div class="actions"><button class="primary" onclick="openSimulator('${key}')">Coba Simulator →</button><button class="outline" onclick="openQuiz('${key}')">Kuis →</button></div>`;
+ showPage('materials');
+}
+function columnRow(operator,digits,kind=''){
+ return `<div class="column-row ${kind}" style="grid-template-columns:1.5rem repeat(${digits.length},minmax(2.15rem,2.5rem))"><span class="column-op">${operator}</span>${digits.map(d=>`<span class="column-digit">${d||''}</span>`).join('')}</div>`;
+}
+function renderColumnExample(key){
+ const examples={
+  add:{equation:'37 + 25 = 62',rows:columnRow('', ['', '1'],'carry')+columnRow('', ['3','7'])+columnRow('+',['2','5'])+columnRow('', ['6','2'],'result'),note:'Satuan: 7 + 5 = 12. Tulis 2, lalu simpan 1 ke kolom puluhan. Puluhan: 3 + 2 + 1 = 6.'},
+  sub:{equation:'56 − 28 = 28',rows:columnRow('', ['4','16'],'borrow')+columnRow('−',['2','8'])+columnRow('', ['2','8'],'result'),note:'Pinjam 1 puluhan: 5 menjadi 4, sedangkan 6 satuan menjadi 16. Hitung 16 − 8 = 8, lalu 4 − 2 = 2.'},
+  mul:{equation:'23 × 14 = 322',rows:columnRow('', ['','2','3'])+columnRow('×',['','1','4'],'factor-end')+columnRow('', ['','9','2'],'partial')+columnRow('', ['2','3','0'],'partial')+columnRow('', ['3','2','2'],'result'),note:'Kalikan 23 × 4 = 92, lalu 23 × 10 = 230. Jumlahkan hasil parsial: 92 + 230 = 322.'}
+ };
+ const example=examples[key]||{equation:ops[key].example};
+ const work=key==='div'?'<div class="division-work" aria-label="Pembagian bersusun 24 dibagi 6 sama dengan 4"><div class="division-top">4</div><div class="division-main"><span class="division-divisor">6</span><span class="division-dividend">24</span></div><div class="division-subtract">−24</div><div class="division-rule"></div><div class="division-remainder">0</div></div>':'<div class="column-board">'+example.rows+'</div>';
+ const note=key==='div'?'6 masuk ke dalam 24 sebanyak 4 kali. Tulis 4 di atas, lalu 24 − 24 = 0.':example.note;
+ return `<figure class="column-example"><p class="column-example-equation">${example.equation}</p>${work}<figcaption class="column-note">${note}</figcaption></figure>`;
+}
+function openLesson(key){
+ const o=ops[key];
+ document.getElementById('lessonDetail').innerHTML=`<div class="eyebrow">Materi inti</div><h2>${o.symbol} ${o.name}</h2><p>${o.concept}</p><h3>Sifat-sifat</h3><ul>${o.properties.map(p=>`<li>${p}</li>`).join('')}</ul><h3>Contoh</h3>${renderColumnExample(key)}<h3>Penerapan sehari-hari</h3><p>${o.application}</p><div class="actions"><button class="primary" onclick="openSimulator('${key}')">Coba Simulator →</button><button class="outline" onclick="openQuiz('${key}')">Kuis →</button></div>`;
+ showPage('materials');
+}
+function togglePasswordVisibility(){
+ const password=document.getElementById('password'),button=document.getElementById('passwordVisibility'),visible=password.type==='password';
+ password.type=visible?'text':'password';button.setAttribute('aria-label',visible?'Sembunyikan sandi':'Tampilkan sandi');button.setAttribute('aria-pressed',String(visible));
+ button.querySelector('.eye-open').classList.toggle('hidden',visible);button.querySelector('.eye-closed').classList.toggle('hidden',!visible);
+}
+function openSimulator(key){document.getElementById('operation').value=key;showPage('simulator');calculate()}
+function returnToLesson(){openLesson(document.getElementById('operation').value)}
+function openFlashcards(){currentFlashcardOperation=document.getElementById('operation').value;revealedFlashcards.clear();renderFlashcards();showPage('flashcards')}
+function flashcardAnswerText(card){return card[0].startsWith('Benar atau salah:')?card[1]:card[1].replace(/^\d+(?:\.\d{3})*\.\s*/,'')}
+function renderFlashcards(){
+ const operation=ops[currentFlashcardOperation],cards=flashcardDecks[currentFlashcardOperation];
+ document.getElementById('flashcardDescription').textContent=`Flashcard ${operation.name}. Tekan kartu untuk membuka jawaban.`;
+ document.getElementById('flashcardTitle').textContent=`Flashcard ${operation.name}`;
+ document.getElementById('flashcardGrid').innerHTML=cards.map((card,index)=>{
+ const revealed=revealedFlashcards.has(index);
+ const answer=flashcardAnswerText(card);
+ return `<button class="flashcard-tile${revealed?' is-flipped':''}" type="button" data-flashcard-index="${index}" aria-label="Kartu ${index+1}, soal ${card[0]}" aria-pressed="${revealed}" onclick="toggleFlashcard(${index})"><span class="flashcard-inner"><span class="flashcard-face flashcard-front" aria-hidden="${revealed}"><span>Kartu ${index+1}</span><strong>${card[0]}</strong><span>Tekan untuk membalik</span></span><span class="flashcard-face flashcard-back" aria-hidden="${!revealed}"><span>Jawaban</span><strong>${answer}</strong><span>Tekan untuk kembali</span></span></span></button>`;
+ }).join('');
+}
+function toggleFlashcard(index){
+ const tile=document.querySelector(`[data-flashcard-index="${index}"]`),revealed=!tile.classList.contains('is-flipped'),card=flashcardDecks[currentFlashcardOperation][index];
+ tile.classList.toggle('is-flipped',revealed);tile.setAttribute('aria-pressed',String(revealed));
+ tile.setAttribute('aria-label',revealed?`Kartu ${index+1}, jawaban ${flashcardAnswerText(card)}`:`Kartu ${index+1}, soal ${card[0]}`);
+ tile.querySelector('.flashcard-front').setAttribute('aria-hidden',String(revealed));tile.querySelector('.flashcard-back').setAttribute('aria-hidden',String(!revealed));
+ if(revealed)revealedFlashcards.add(index);else revealedFlashcards.delete(index);
+}
+function openQuiz(key){
+ currentQuizOperation=key;currentQuizIndex=0;currentQuizQuestions=shuffleQuizQuestions(key);quizAnswers=Array(currentQuizQuestions.length).fill(null);quizComplete=false;renderQuiz();showPage('quiz');
+}
+function shuffleQuizQuestions(key){
+ let previousAnswerPosition=-1;
+ const questions=[...quizDecks[key]];
+ for(let index=questions.length-1;index>0;index--){const randomIndex=Math.floor(Math.random()*(index+1));[questions[index],questions[randomIndex]]=[questions[randomIndex],questions[index]];}
+ return questions.map(question=>{
+  const choices=[...question.choices];
+  for(let index=choices.length-1;index>0;index--){const randomIndex=Math.floor(Math.random()*(index+1));[choices[index],choices[randomIndex]]=[choices[randomIndex],choices[index]];}
+  let answerPosition=choices.indexOf(question.answer);
+  if(answerPosition===previousAnswerPosition){
+   const alternatives=choices.map((_,index)=>index).filter(index=>index!==answerPosition),newPosition=alternatives[Math.floor(Math.random()*alternatives.length)];
+   [choices[answerPosition],choices[newPosition]]=[choices[newPosition],choices[answerPosition]];answerPosition=newPosition;
+  }
+  previousAnswerPosition=answerPosition;
+  return {...question,choices};
+ });
+}
+function renderQuiz(){
+ const deck=currentQuizQuestions,operation=ops[currentQuizOperation],content=document.getElementById('quizContent');
+ document.getElementById('quizTitle').textContent=`Kuis ${operation.name}`;
+ document.getElementById('quizDescription').textContent=`5 soal ${operation.name.toLowerCase()}. Pilih satu jawaban.`;
+ const navigation=document.getElementById('quizNavigation');
+ if(quizComplete){
+  const score=quizAnswers.reduce((total,answer,index)=>total+(answer===deck[index].answer?1:0),0);
+  navigation.hidden=true;
+  content.innerHTML=`<div class="quiz-result"><div class="eyebrow">Kuis selesai</div><h2>Nilai kamu: ${score} dari ${deck.length}</h2><p>Kamu menjawab ${score} soal dengan benar.</p><div class="quiz-result-actions"><button class="primary" id="retryQuiz" type="button">Ulangi Kuis</button><button class="outline" type="button" onclick="returnToQuizLesson()">Materi Inti</button><button class="secondary" type="button" onclick="showPage('materials')">Daftar Materi</button></div></div>`;
+  document.getElementById('retryQuiz').addEventListener('click',()=>openQuiz(currentQuizOperation));
+  return;
+ }
+ navigation.hidden=false;
+ const question=deck[currentQuizIndex],selected=quizAnswers[currentQuizIndex];
+ const feedback=selected===null?'':selected===question.answer?`Benar! ${question.explanation}`:`Belum tepat. Jawaban yang benar: ${question.answer}. ${question.explanation}`;
+ const promptClass=question.question.length>80?'quiz-prompt story':'quiz-prompt';
+ content.innerHTML=`<article class="quiz-question-card"><div class="quiz-question-number">Soal ${currentQuizIndex+1} dari ${deck.length}</div><h2 class="${promptClass}">${question.question}</h2><div class="quiz-options">${question.choices.map((choice,index)=>{const state=selected===null?'':choice===question.answer?' correct':choice===selected?' incorrect':'';return `<button class="quiz-option${state}" type="button" data-quiz-option="${index}" aria-pressed="${selected===choice}" ${selected!==null?'disabled':''}>${choice}</button>`}).join('')}</div><p class="quiz-feedback ${selected===null?'':selected===question.answer?'correct':'incorrect'}" role="status">${feedback}</p></article>`;
+ document.querySelectorAll('[data-quiz-option]').forEach(button=>button.addEventListener('click',()=>selectQuizAnswer(Number(button.dataset.quizOption))));
+ document.getElementById('quizPrevious').disabled=currentQuizIndex===0;
+ const next=document.getElementById('quizNext');next.disabled=selected===null;next.textContent=currentQuizIndex===deck.length-1?'Lihat Hasil':'Selanjutnya →';
+}
+function selectQuizAnswer(optionIndex){
+ if(quizAnswers[currentQuizIndex]!==null)return;
+ quizAnswers[currentQuizIndex]=currentQuizQuestions[currentQuizIndex].choices[optionIndex];renderQuiz();
+}
+function previousQuizQuestion(){if(currentQuizIndex>0){currentQuizIndex--;renderQuiz()}}
+function nextQuizQuestion(){
+ if(quizAnswers[currentQuizIndex]===null)return;
+ if(currentQuizIndex===currentQuizQuestions.length-1)quizComplete=true;else currentQuizIndex++;
+ renderQuiz();
+}
+function returnToQuizLesson(){openLesson(currentQuizOperation)}
+document.getElementById('loginForm').addEventListener('submit',e=>{
+ e.preventDefault();const email=document.getElementById('email').value.trim();const pass=document.getElementById('password').value;
+ if(!email||pass.length<4){document.getElementById('loginError').textContent='Periksa email dan gunakan password minimal 4 karakter.';return}
+ currentUser=email.split('@')[0];sessionStorage.setItem('polymathUser',currentUser);updateLearningAccess();document.getElementById('loginError').textContent='';showPage('materials');
+});
+document.getElementById('brandHome').addEventListener('click',()=>showPage('home'));
+function updateOperationNavigation(){
+}
+function fmt(n){return Number.isInteger(n)?String(n):String(Number(n.toFixed(6)))}
+function calculate(){
+ const key=document.getElementById('operation').value,a=Number(document.getElementById('numberA').value),b=Number(document.getElementById('numberB').value),o=ops[key];
+ updateOperationNavigation();
+ const equation=document.getElementById('equation'),tag=document.getElementById('resultTag'),visual=document.getElementById('visualObjects'),ex=document.getElementById('explanation'),steps=document.getElementById('solutionSteps'),notice=document.getElementById('simNotice');
+ tag.textContent=o.name;visual.innerHTML='';
+ if(document.getElementById('numberA').value===''||document.getElementById('numberB').value===''){equation.textContent='Masukkan kedua angka';ex.textContent='Isi nilai awal dan nilai kedua terlebih dahulu.';steps.innerHTML='';return}
+ if(key==='div'&&b===0){equation.textContent='Tidak dapat dibagi 0';ex.textContent='Pembagian dengan nol tidak terdefinisi.';steps.innerHTML='<div class="step"><div class="step-number">!</div><h4>Periksa pembagi</h4><p>Masukkan nilai kedua selain 0, lalu tekan Hitung lagi.</p></div>';notice.textContent='Pembagi tidak boleh bernilai nol.';return}
+ let result,detail=[];
+ if(key==='add'){
+ result=a+b;ex.textContent=`Menggabungkan ${fmt(a)} dan ${fmt(b)} untuk mendapatkan jumlah.`;detail=[['1. Kenali bilangan',`Bilangan pertama adalah ${fmt(a)} dan bilangan kedua ${fmt(b)}.`],['2. Gabungkan nilai','Tambahkan nilai kedua bilangan: '+fmt(a)+' + '+fmt(b)+'.'],['3. Dapatkan hasil',`Jumlahnya adalah ${fmt(result)}.`]];
+ }else if(key==='sub'){
+ result=a-b;ex.textContent=`Mengurangi ${fmt(a)} dengan ${fmt(b)} untuk mencari selisih.`;detail=[['1. Tentukan nilai awal',`Mulai dari ${fmt(a)}.`],['2. Kurangi nilai kedua',`Kurangi ${fmt(a)} dengan ${fmt(b)}: ${fmt(a)} − ${fmt(b)}.`],['3. Dapatkan selisih',`Hasil pengurangan adalah ${fmt(result)}.`]];
+ }else if(key==='mul'){
+ result=a*b;ex.textContent=`Mengalikan ${fmt(a)} dengan ${fmt(b)}. Perkalian dapat dipahami sebagai penjumlahan berulang.`;detail=[['1. Tentukan kelompok',`Ada ${fmt(b)} kelompok, masing-masing bernilai ${fmt(a)} (untuk bilangan bulat positif).`],['2. Jumlahkan berulang',`${fmt(a)} × ${fmt(b)} berarti ${fmt(a)} dijumlahkan sebanyak ${fmt(b)} kali.`],['3. Dapatkan hasil',`Hasil perkalian adalah ${fmt(result)}.`]];
+ }else{
+ result=a/b;ex.textContent=`Membagi ${fmt(a)} menjadi ${fmt(b)} bagian atau kelompok sama banyak.`;detail=[['1. Tentukan jumlah',`Jumlah yang dibagi adalah ${fmt(a)}.`],['2. Tentukan pembagi',`Bagi ${fmt(a)} dengan ${fmt(b)}: ${fmt(a)} ÷ ${fmt(b)}.`],['3. Dapatkan hasil',`Hasil pembagian adalah ${fmt(result)}.`]];
+ }
+ equation.textContent=`${fmt(a)} ${o.symbol} ${fmt(b)} = ${fmt(result)}`;
+ // Illustrative counters are intentionally capped so very large values don't crowd the screen.
+ const cap=Math.min(20,Math.max(0,Math.floor(Math.abs(a)))),capB=Math.min(20,Math.max(0,Math.floor(Math.abs(b))));
+ if(key==='add'||key==='sub'){
+ for(let i=0;i<cap;i++)visual.insertAdjacentHTML('beforeend','<span class="counter"></span>');
+ for(let i=0;i<capB;i++)visual.insertAdjacentHTML('beforeend','<span class="counter blue"></span>');
+ }else if(key==='div'){
+ const groups=Math.min(10,Math.max(0,Math.floor(Math.abs(b)))),items=Math.min(20,Math.max(0,Math.floor(Math.abs(a))));
+ const perGroup=Math.floor(items/groups),remainder=items%groups;
+ for(let g=0;g<groups;g++){
+ const group=document.createElement('div');
+ group.className='division-group';group.setAttribute('role','group');group.setAttribute('aria-label',`Kelompok ${g+1}, ${perGroup} titik`);
+ for(let j=0;j<perGroup;j++)group.insertAdjacentHTML('beforeend','<span class="counter blue" aria-hidden="true"></span>');
+ visual.appendChild(group);
+ }
+ if(remainder>0){
+ const leftover=document.createElement('div');
+ leftover.className='division-remainder';leftover.setAttribute('role','group');leftover.setAttribute('aria-label',`${remainder} titik tersisa`);
+ leftover.insertAdjacentHTML('beforeend','<span class="division-remainder-label">Sisa</span>');
+ for(let i=0;i<remainder;i++)leftover.insertAdjacentHTML('beforeend','<span class="counter" aria-hidden="true"></span>');
+ visual.appendChild(leftover);
+ if(Number.isInteger(a)&&Number.isInteger(b)&&items===Math.floor(Math.abs(a))&&groups===Math.floor(Math.abs(b)))ex.textContent=`Pada gambar, ${items} titik dibagikan ke ${groups} kelompok: masing-masing ${perGroup} titik, dengan ${remainder} titik tersisa.`;
+ }
+ }else{
+ const groups=Math.min(10,Math.max(0,Math.floor(Math.abs(b)))),per=Math.min(10,Math.max(0,Math.floor(Math.abs(a))));
+ for(let g=0;g<groups;g++){visual.insertAdjacentHTML('beforeend',`<span class="counter" title="Kelompok ${g+1}">${g+1}</span>`);for(let j=0;j<per;j++)visual.insertAdjacentHTML('beforeend','<span class="counter blue"></span>');}
+ }
+ steps.innerHTML=detail.map((s,i)=>`<article class="step"><div class="step-number">${i+1}</div><h4>${s[0]}</h4><p>${s[1]}</p></article>`).join('');
+ notice.textContent='Catatan: gambar lingkaran merupakan ilustrasi kelompok bilangan. Jika angka besar, jumlah lingkaran dibatasi agar tampilan tetap jelas.';
+}
+calculate();
+</script>
+</body>
+</html>
